@@ -1,0 +1,1 @@
+GIN_MODE="release" && go build -o gm_csv.exe main.go 
