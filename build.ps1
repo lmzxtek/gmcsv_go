@@ -14,9 +14,9 @@ $OutputDir = "bin"
 # 目标平台列表
 $Platforms = @(
     [PSCustomObject]@{ GOOS = "windows"; GOARCH = "amd64"; Ext = ".exe" },
-    [PSCustomObject]@{ GOOS = "linux";   GOARCH = "amd64"; Ext = "" },
-    [PSCustomObject]@{ GOOS = "darwin";  GOARCH = "amd64"; Ext = "" },
-    [PSCustomObject]@{ GOOS = "darwin";  GOARCH = "arm64"; Ext = "" }
+    [PSCustomObject]@{ GOOS = "linux";   GOARCH = "amd64"; Ext = "" }
+    # [PSCustomObject]@{ GOOS = "darwin";  GOARCH = "amd64"; Ext = "" },
+    # [PSCustomObject]@{ GOOS = "darwin";  GOARCH = "arm64"; Ext = "" }
 )
 
 # 清理旧构建

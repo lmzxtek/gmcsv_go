@@ -46,18 +46,37 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	fmt.Printf("\n Set gin mode to Release\n")
 
-	// 读取 config.json
-	file, err := os.Open("cfg.json")
+	const filename = "gmcsv.json"
+	file, err := os.Open(filename)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to open cfg.json: %v", err))
+		if os.IsNotExist(err) {
+			// 文件不存在，创建默认配置
+			fmt.Printf("\n !!! %s does not exist, use default config\n", filename)
+			defaultCfg := &Config{
+				Debug:     false,
+				Port:      5002,
+				FldData:   "data_year",
+				ServerTag: "gmcsv",
+			}
+
+			// 创建文件并写入JSON格式的配置
+			data, err := json.MarshalIndent(defaultCfg, "", "    ")
+			if err != nil {
+				panic(fmt.Sprintf("Failed to convert json data %v", err))
+			}
+			if err := os.WriteFile(filename, data, 0644); err != nil {
+				panic(fmt.Sprintf("Failed to write %s: %v", filename, err))
+			}
+			config = *defaultCfg
+		}
+	} else {
+		decoder := json.NewDecoder(file)
+		err = decoder.Decode(&config)
+		if err != nil {
+			panic(fmt.Sprintf("Failed to parse %s: %v", filename, err))
+		}
 	}
 	defer file.Close()
-
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&config)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to parse cfg.json: %v", err))
-	}
 
 	baseDir, _ = filepath.Abs(config.FldData)
 	os.MkdirAll(baseDir, os.ModePerm)
