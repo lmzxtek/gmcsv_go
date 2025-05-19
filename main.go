@@ -44,14 +44,14 @@ type Config struct {
 	ServerTag string `json:"servertag"`
 }
 
-var cfg = &Config{
-	Debug:     false,
-	Port:      5002,
-	FldData:   "data_year",
-	ServerTag: "gmcsv",
-}
+// var cfg = &Config{
+// 	Debug:     false,
+// 	Port:      5002,
+// 	FldData:   "data_year",
+// 	ServerTag: "gmcsv",
+// }
 
-// var cfg Config
+var cfg Config
 var baseDir string
 
 func main() {
@@ -118,7 +118,7 @@ func LoadOrCreateConfig(filename string) (*Config, error) {
 	defer file.Close()
 
 	// 文件存在时解析配置
-	var cfg Config
+	// var cfg Config
 	if err := json.NewDecoder(file).Decode(&cfg); err != nil {
 		return nil, fmt.Errorf("配置解析失败: %v", err)
 	}
