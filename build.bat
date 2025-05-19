@@ -6,7 +6,7 @@ rd /s /q bin 2>nul
 mkdir bin
 
 REM 定义目标平台列表
-set PLATFORMS=windows/amd64,linux/amd64,darwin/amd64,darwin/arm64
+set PLATFORMS=windows/amd64,linux/amd64,linux/arm64,darwin/amd64,darwin/arm64
 
 REM 遍历所有平台
 for %%p in (%PLATFORMS%) do (
