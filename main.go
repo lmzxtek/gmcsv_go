@@ -12,6 +12,11 @@ Run   : go run main.go
 Build : go build -o gm_csv.exe main.go
 		GIN_MODE="release" && go build -o gm_csv.exe main.go     # Linux
 		$env:GIN_MODE="release"; go build -o gm_csv.exe main.go  # Windows Powershell
+
+URl:
+	https://github.com/lmzxtek/gmcsv_go/releases/latest/download/gmcsv-linux-amd64
+	https://github.com/lmzxtek/gmcsv_go/releases/latest/download/gmcsv-windows-amd64.exe
+
 =================================================================
 */
 
