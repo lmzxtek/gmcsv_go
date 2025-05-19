@@ -57,6 +57,7 @@ jobs:
             支持平台：
             - Windows (amd64)
             - Linux (amd64)
+            - Linux (arm64)
           files: ./artifacts/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
