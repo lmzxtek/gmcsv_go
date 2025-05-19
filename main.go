@@ -24,6 +24,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -43,7 +44,14 @@ type Config struct {
 	ServerTag string `json:"servertag"`
 }
 
-var config Config
+var cfg = &Config{
+	Debug:     false,
+	Port:      5002,
+	FldData:   "data_year",
+	ServerTag: "gmcsv",
+}
+
+// var cfg Config
 var baseDir string
 
 func main() {
@@ -51,57 +59,71 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	fmt.Printf("\n Set gin mode to Release\n")
 
-	const filename = "gmcsv.json"
-	file, err := os.Open(filename)
+	// 解析命令行参数
+	var configFile string
+	flag.StringVar(&configFile, "c", "gmcsv.json", "配置文件路径")
+	flag.Parse()
+
+	// 加载或创建配置
+	cfg, err := LoadOrCreateConfig(configFile)
 	if err != nil {
-		if os.IsNotExist(err) {
-			// 文件不存在，创建默认配置
-			fmt.Printf("\n !!! %s does not exist, use default config\n", filename)
-			defaultCfg := &Config{
-				Debug:     false,
-				Port:      5002,
-				FldData:   "data_year",
-				ServerTag: "gmcsv",
-			}
-
-			// 创建文件并写入JSON格式的配置
-			data, err := json.MarshalIndent(defaultCfg, "", "    ")
-			if err != nil {
-				panic(fmt.Sprintf("Failed to convert json data %v", err))
-			}
-			if err := os.WriteFile(filename, data, 0644); err != nil {
-				panic(fmt.Sprintf("Failed to write %s: %v", filename, err))
-			}
-			config = *defaultCfg
-		}
-	} else {
-		decoder := json.NewDecoder(file)
-		err = decoder.Decode(&config)
-		if err != nil {
-			panic(fmt.Sprintf("Failed to parse %s: %v", filename, err))
-		}
+		panic(err)
 	}
-	defer file.Close()
+	fmt.Printf("\nLoaded config: %+v\n", cfg)
 
-	baseDir, _ = filepath.Abs(config.FldData)
+	baseDir, _ = filepath.Abs(cfg.FldData)
 	os.MkdirAll(baseDir, os.ModePerm)
 
-	// if config.Debug {
-	// 	// 设置为 Release 模式
-	// 	gin.SetMode(gin.ReleaseMode)
-	// 	fmt.Printf("\n Set gin mode to Release\n")
-	// }
 	r := gin.Default()
 
 	r.GET("/test", routeTest)
+	r.GET("/test2", routeTest2)
+	r.GET("/usage", routeUsage)
 	r.GET("/download/*filepath", routeDownload)
 	r.POST("/upload/*filepath", routeUpload)
-	r.GET("/usage", routeUsage)
 
-	// addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
-	addr := fmt.Sprintf(":%d", config.Port)
+	// addr := fmt.Sprintf("%s:%d", cfg.Host, config.Port)
+	addr := fmt.Sprintf(":%d", cfg.Port)
 	fmt.Printf("\nServer running at http://*%s\n\n", addr)
 	r.Run(addr)
+}
+
+// 修改后的配置加载函数，接收文件名参数
+func LoadOrCreateConfig(filename string) (*Config, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		defaultCfg := &Config{
+			Debug:     false,
+			Port:      5002,
+			FldData:   "data_year",
+			ServerTag: "gmcsv",
+		}
+		if os.IsNotExist(err) {
+			// 文件不存在时创建默认配置
+
+			data, err := json.MarshalIndent(defaultCfg, "", "    ")
+			if err != nil {
+				return defaultCfg, fmt.Errorf("JSON编码失败: %v", err)
+			}
+
+			if err := os.WriteFile(filename, data, 0644); err != nil {
+				return defaultCfg, fmt.Errorf("文件创建失败: %v", err)
+			}
+
+			fmt.Printf(" %s配置文件不存在，已创建默认配置\n", filename)
+			return defaultCfg, nil
+		}
+		return defaultCfg, fmt.Errorf("文件打开错误: %v, \n 使用默认参数 ", err)
+	}
+	defer file.Close()
+
+	// 文件存在时解析配置
+	var cfg Config
+	if err := json.NewDecoder(file).Decode(&cfg); err != nil {
+		return nil, fmt.Errorf("配置解析失败: %v", err)
+	}
+
+	return &cfg, nil
 }
 
 func getFilePathYear(symbol string, tag string, year int) string {
@@ -130,22 +152,39 @@ func getFilePathMonth(symbol string, year int, month int) string {
 	return fpath
 }
 
-func routeTest(c *gin.Context) {
-
+func createTestFile() {
 	// 如果 test.txt 不存在，创建它
 	testFile := filepath.Join(baseDir, "test.txt")
 	if _, err := os.Stat(testFile); os.IsNotExist(err) {
 		os.WriteFile(testFile, []byte("This is a file for url request test."), 0644)
 	}
+}
+
+func routeTest(c *gin.Context) {
+	createTestFile()
 
 	symbol := c.DefaultQuery("symbol", "AAPL")
 	time := c.DefaultQuery("time", "2024-01-01")
-
 	data := gin.H{
 		"Symbol": []string{symbol, symbol, symbol, symbol, symbol},
 		"Time":   []string{time, time, time, time, time},
 		"Price":  []int{100, 101, 102, 103, 104},
 		"Volume": []int{200, 210, 220, 230, 240},
+	}
+	c.JSON(http.StatusOK, data)
+}
+
+func routeTest2(c *gin.Context) {
+	createTestFile()
+	data := gin.H{
+		"columns": []string{"Symbol", "Time", "Price", "Volume"},
+		"data": [][]any{
+			{"AAPL", "2025-05-01", 100, 200},
+			{"AAPL", "2025-05-01", 100, 200},
+			{"AAPL", "2025-05-01", 100, 200},
+			{"AAPL", "2025-05-01", 100, 200},
+			{"AAPL", "2025-05-01", 100, 200},
+		},
 	}
 	c.JSON(http.StatusOK, data)
 }
@@ -340,7 +379,7 @@ func routeUsage(c *gin.Context) {
 	// 	HostURL:   hostURL,
 	// })
 	html := BuildHTML(HTMLConfig{
-		ServerTag: config.ServerTag,
+		ServerTag: cfg.ServerTag,
 		HostURL:   hostURL,
 		Symbol:    "SHSE.601088",
 		Sididx:    "SHSE.000001",

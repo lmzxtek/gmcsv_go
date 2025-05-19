@@ -1,0 +1,1 @@
+$env:GIN_MODE="release"; .\gmcsv-windows-amd64.exe

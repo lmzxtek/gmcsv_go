@@ -9,7 +9,7 @@
 # 配置参数
 $ProjectName = "gmcsv"
 $OutputDir = "bin"
-# $env:GIN_MODE="release"
+$env:GIN_MODE="release"
 
 # 目标平台列表
 $Platforms = @(
