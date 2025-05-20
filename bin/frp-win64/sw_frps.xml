@@ -1,0 +1,8 @@
+<service>
+  <id>frps</id>
+  <name>Frp Server</name>
+  <description>This service runs frp Server.</description>
+  <executable>frps.exe</executable>
+  <arguments>-c frps.toml</arguments>
+  <log mode="roll"></log>
+</service>
