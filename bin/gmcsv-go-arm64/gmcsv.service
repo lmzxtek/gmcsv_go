@@ -1,0 +1,16 @@
+[Unit]
+Description=GMcsv Service
+After=network.target
+
+[Service]
+Type=simple
+
+User=root
+Group=root
+
+WorkingDirectory=/opt/gmcsv/
+ExecStart=/opt/gmcsv/zoraxy -c /opt/gmcsv/gmcsv.json
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

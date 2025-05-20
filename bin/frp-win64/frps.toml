@@ -1,0 +1,15 @@
+# bindAddr = "0.0.0.0"
+# bindAddr = "::"
+bindPort = 7000
+quicBindPort = 7000
+# QUIC 绑定的是 UDP 端口，可以和 bindPort 一样
+
+auth.method = "token"
+auth.token = "tokentoken"
+
+# webServer.addr = "::"
+webServer.addr = "0.0.0.0"
+webServer.port = 7500
+webServer.user = "admin"
+webServer.password = "adminadmin"
+

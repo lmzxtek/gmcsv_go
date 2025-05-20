@@ -1,0 +1,68 @@
+serverAddr = "x.x.x.x"
+# serverAddr = "[::x]"
+serverPort = 7000
+transport.protocol = "quic"
+
+auth.method = "token"
+auth.token  = "tokentoken"
+
+# webServer.addr = "::"
+# webServer.addr = "0.0.0.0"
+# webServer.port = 7400
+# webServer.user = "admin"
+# webServer.password = "adminadmin"
+
+
+#================================
+[[proxies]]
+name = "api(5000:16010)-demo1"
+type = "tcp"
+# localIP = "::1"
+localIP = "127.0.0.1"
+# localIP = "localhost"
+localPort = 5000
+remotePort = 16010
+# transport.useEncryption = true
+# transport.useCompression = true
+
+#================================
+[[proxies]]
+name = "api(5002:16020)-demo2"
+type = "tcp"
+# localIP = "::1"
+localIP = "127.0.0.1"
+# localIP = "localhost"
+localPort = 5002
+remotePort = 16020
+transport.useEncryption = true
+# transport.useCompression = true
+
+
+#================================
+[[proxies]]
+name = "gma(5000:16600)-1"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 5000
+remotePort = 16600
+loadBalancer.group = "gma"
+loadBalancer.groupKey = "54321"
+
+[[proxies]]
+name = "gma(16002:16600)-2
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 16002
+remotePort = 16600
+loadBalancer.group = "gma"
+loadBalancer.groupKey = "54321"
+
+[[proxies]]
+name = "gma(16003:16600)-3"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 16003
+remotePort = 16600
+loadBalancer.group = "gma"
+loadBalancer.groupKey = "54321"
+
