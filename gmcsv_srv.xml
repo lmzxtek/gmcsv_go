@@ -1,0 +1,8 @@
+<service>
+  <id>gmcsv</id>
+  <name>GM-CSV(WinSW)</name>
+  <description>This service runs gm-csv Server.</description>
+  <executable>gmcsv-windows-adm64.exe</executable>
+  <arguments>-c gmcsv.json</arguments>
+  <log mode="roll"></log>
+</service>
