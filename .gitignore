@@ -24,8 +24,10 @@ go.work.sum
 # env file
 .env
 
-/bin/*.zip
+*.7z
+*.zip
 *-linux-amd64
 *-linux-arm64
 
+# /bin/
 /data_year/
