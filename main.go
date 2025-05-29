@@ -27,6 +27,7 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -78,6 +79,7 @@ func main() {
 
 	r.GET("/test", routeTest)
 	r.GET("/test2", routeTest2)
+	r.GET("/test3", routeTest3)
 	r.GET("/usage", routeUsage)
 	r.GET("/download/*filepath", routeDownload)
 	r.POST("/upload/*filepath", routeUpload)
@@ -160,33 +162,127 @@ func createTestFile() {
 	}
 }
 
+// RandomStock 从预定义的股票代码数组中随机返回一个元素
+func randomStock() string {
+	// var localRand *rand.Rand
+	// stocks := []string{"AAPL", "GOOG", "AMZN", "MSFT", "TSLA"}
+	// // 使用本地的随机数生成器
+	// return stocks[localRand.Intn(len(stocks))]
+
+	stocks := []string{"AAPL", "GOOG", "AMZN", "MSFT", "TSLA"}
+
+	// 使用当前时间作为随机种子
+	// rand.Seed(time.Now().UnixNano())
+
+	// 生成随机索引
+	randomIndex := rand.Intn(len(stocks))
+
+	return stocks[randomIndex]
+}
+
+// randomIntWithRange 返回一个在 [a-b, a+b] 区间内的随机整数
+func randomIntWithRange(a, b int) int {
+	// 使用本地的随机数生成器生成一个在 [a-b, a+b] 区间内的随机整数
+	// var localRand *rand.Rand
+	// return localRand.Intn(2*b+1) + a - b
+
+	// 计算最小值和最大值
+	min := a - b
+	max := a + b
+
+	// 生成范围内的随机整数
+	return rand.Intn(max-min+1) + min
+}
+
+// randomDateInLastYear 返回过去一年之内的随机日期
+func randomDateInLastYear() string {
+	// var localRand *rand.Rand
+	// 获取当前时间
+	now := time.Now()
+	// 计算一年前的时间
+	oneYearAgo := now.AddDate(-1, 0, 0)
+	// 计算一年前和现在的时间差（以秒为单位）
+	diff := now.Unix() - oneYearAgo.Unix()
+	// 生成一个在过去一年内的随机时间点（以秒为单位）
+	randomUnix := oneYearAgo.Unix() + int64(rand.Intn(int(diff)))
+	// 将随机时间点转换为时间对象
+	randomTime := time.Unix(randomUnix, 0)
+	// 格式化随机时间为 "YYYY-MM-DD" 格式
+	return randomTime.Format("2006-01-02")
+}
+
 func routeTest(c *gin.Context) {
 	createTestFile()
 
-	symbol := c.DefaultQuery("symbol", "AAPL")
-	time := c.DefaultQuery("time", "2024-01-01")
+	pa := randomIntWithRange(100, 20)
+	pp := int(float64(pa) * 0.1)
+	va := randomIntWithRange(100000, 1000)
+	vv := int(float64(pa) * 0.1)
+
+	// symbol := c.DefaultQuery("symbol", "AAPL")
+	// time := c.DefaultQuery("time", "2024-01-01")
 	data := gin.H{
-		"Symbol": []string{symbol, symbol, symbol, symbol, symbol},
-		"Time":   []string{time, time, time, time, time},
-		"Price":  []int{100, 101, 102, 103, 104},
-		"Volume": []int{200, 210, 220, 230, 240},
+		"Symbol": []string{randomStock(), randomStock(), randomStock(), randomStock(), randomStock()},
+		"Time":   []string{randomDateInLastYear(), randomDateInLastYear(), randomDateInLastYear(), randomDateInLastYear(), randomDateInLastYear()},
+		"Price":  []int{randomIntWithRange(pa, pp), randomIntWithRange(pa, pp), randomIntWithRange(pa, pp), randomIntWithRange(pa, pp), randomIntWithRange(pa, pp)},
+		"Volume": []int{randomIntWithRange(va, vv), randomIntWithRange(va, vv), randomIntWithRange(va, vv), randomIntWithRange(va, vv), randomIntWithRange(va, vv)},
 	}
 	c.JSON(http.StatusOK, data)
 }
 
 func routeTest2(c *gin.Context) {
 	createTestFile()
+
+	pa := randomIntWithRange(100, 20)
+	pp := int(float64(pa) * 0.1)
+	va := randomIntWithRange(100000, 1000)
+	vv := int(float64(pa) * 0.1)
+
 	data := gin.H{
 		"columns": []string{"Symbol", "Time", "Price", "Volume"},
 		"data": [][]any{
-			{"AAPL", "2025-05-01", 100, 200},
-			{"AAPL", "2025-05-01", 100, 200},
-			{"AAPL", "2025-05-01", 100, 200},
-			{"AAPL", "2025-05-01", 100, 200},
-			{"AAPL", "2025-05-01", 100, 200},
+			{randomStock(), randomDateInLastYear(), randomIntWithRange(pa, pp), randomIntWithRange(va, vv)},
+			{randomStock(), randomDateInLastYear(), randomIntWithRange(pa, pp), randomIntWithRange(va, vv)},
+			{randomStock(), randomDateInLastYear(), randomIntWithRange(pa, pp), randomIntWithRange(va, vv)},
+			{randomStock(), randomDateInLastYear(), randomIntWithRange(pa, pp), randomIntWithRange(va, vv)},
+			{randomStock(), randomDateInLastYear(), randomIntWithRange(pa, pp), randomIntWithRange(va, vv)},
+			// {"AAPL", "2025-05-01", 100, 200},
+			// {"AAPL", "2025-05-01", 100, 200},
+			// {"AAPL", "2025-05-01", 100, 200},
+			// {"AAPL", "2025-05-01", 100, 200},
 		},
 	}
 	c.JSON(http.StatusOK, data)
+}
+
+// 定义一个record结构体，包含每个字段
+type record struct {
+	Symbol string `json:"Symbol"`
+	Time   string `json:"Time"`
+	Price  int    `json:"Price"`
+	Volume int    `json:"Volume"`
+}
+
+func routeTest3(c *gin.Context) {
+	createTestFile()
+
+	pa := randomIntWithRange(100, 20)
+	pp := int(float64(pa) * 0.1)
+	va := randomIntWithRange(100000, 1000)
+	vv := int(float64(pa) * 0.1)
+
+	// 创建一个包含5个record的切片
+	records := make([]record, 5)
+	for i := range records {
+		records[i] = record{
+			Symbol: randomStock(),
+			Time:   randomDateInLastYear(),
+			Price:  randomIntWithRange(pa, pp),
+			Volume: randomIntWithRange(va, vv),
+		}
+	}
+
+	c.JSON(http.StatusOK, records)
 }
 
 func routeDownload(c *gin.Context) {
@@ -316,6 +412,7 @@ func BuildHTML(cfg HTMLConfig) string {
         <li>说明: <a href="http://%s/usage" target="_blank">http://%s/usage</a></li>
         <li>测试: <a href="http://%s/test" target="_blank">http://%s/test</a></li>
         <li>测试: <a href="http://%s/test2" target="_blank">http://%s/test2</a></li>
+        <li>测试: <a href="http://%s/test3" target="_blank">http://%s/test3</a></li>
     </ul>
 
     <h3>下载接口</h3>
@@ -351,6 +448,7 @@ func BuildHTML(cfg HTMLConfig) string {
 </html>`,
 		cfg.ServerTag, cfg.ServerTag, today,
 
+		url, url,
 		url, url,
 		url, url,
 		url, url,

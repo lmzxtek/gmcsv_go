@@ -1,0 +1,7 @@
+{
+    "host": "",
+    "port": 5002,
+    "debug": false,
+    "fld_data": "data_year",
+    "servertag": "gmcsv"
+}
