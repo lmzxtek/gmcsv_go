@@ -1,8 +1,0 @@
-<service>
-  <id>frpc</id>
-  <name>Frp Client service</name>
-  <description>This service runs frp Client service.</description>
-  <executable>frpc.exe</executable>
-  <arguments>-c frpc.toml</arguments>
-  <log mode="roll"></log>
-</service>
