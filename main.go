@@ -272,7 +272,7 @@ func routeTest3(c *gin.Context) {
 	vv := int(float64(pa) * 0.1)
 
 	// 创建一个包含5个record的切片
-	records := make([]record, 5)
+	records := make([]record, randomIntWithRange(9, 3))
 	for i := range records {
 		records[i] = record{
 			Symbol: randomStock(),
